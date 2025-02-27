@@ -8,8 +8,8 @@ Users should feel free to peruse the materials here as well as watch the recordi
 
 ## Materials 
 
-The training materials for the latest workshop can be found here:
-* [March_2024/Code](./Feb_2024/Code) - RProject and Jupyter Notebooks containing executable R code.
+The training materials for the previous workshop can be found here:
+(https://github.com/UKDataServiceOpen/Crime_Data_in_R) 
 
 ## Further Information
 
