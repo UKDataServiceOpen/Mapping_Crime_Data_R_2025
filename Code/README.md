@@ -14,6 +14,7 @@ If you have a Google account then please click the *Open in Colab* link.
 
 ### 1 - Exploring the crime data
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/UKDataServiceOpen/Mapping_Crime_Data_R_2025/blob/main/Code/1%20-%20Exploring%20Crime%20Data.ipynb)
 
 ### 2 - Shapefiles
 
