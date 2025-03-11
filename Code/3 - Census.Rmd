@@ -1,5 +1,5 @@
 ---
-title: "Mapping Crime Data in R - Crime Rate vs Crime Count"
+title: "Mapping Crime Data in R - Census Data"
 author: "Nadia Kennar, Research Associate with the UKDS"
 date: "18th of March 2025"
 output:
@@ -13,7 +13,9 @@ knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
 
 ## Intro 
 
-In this final section we incorporate some census data onto our shapefile so we can calculate and explore the differences between crime rate and crime counts. We then introduce cartograms as an alternative thematic map 
+In this final section we incorporate some census data onto our shapefile so we can calculate and explore the differences between crime rate and crime counts. We then introduce cartograms as an alternative thematic map. 
+
+In theory showing that crime rate accounts for population differences and is a more meaningful measure than raw counts.
 
 ## Load packages
 
@@ -49,7 +51,7 @@ library(tmap)
 
 Count data is not entirely accurate of population density. Whilst the code in Section_1 and Section_2 might help us identify interesting patterns, point-level open crime data is rarely used in isolation for detailed analysis. 
 
-For one thing, the data is points are geomasked. This means that points are highly likely to be overlapped, giving a skewed picture of the distribution. There are ways round this, such as through jittering or applying census based data. To view more information about jittering please view the 'Additional Topic.rmd' file,
+For one thing, the data are points are geomasked. This means that points are highly likely to be overlapped, giving a skewed picture of the distribution. There are ways round this, such as through jittering or applying census based data. To view more information about jittering please view the 'Additional Topic.rmd' file,
 
 
 ### Census 2022
@@ -125,6 +127,15 @@ ggplot() +
   annotation_map_tile() + 
   geom_sf(data = surrey_lsoa, aes(fill = crime_rate), alpha = 0.5) + 
   scale_fill_gradient2(name ="Crime Rate")
+
+##Improve Mapping
+ggplot(surrey_lsoa) + 
+  geom_sf(aes(fill = crime_rate), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "magma", name = "Crime Rate per 10,000") +
+  labs(title = "Crime Rate by LSOA in Surrey",
+       caption = "Source: Police.uk & Census 2022") +
+  theme_minimal()
+
 ```
 
 
@@ -135,6 +146,17 @@ ggplot() +
 tm_shape(surrey_lsoa) + 
   tm_fill("crime_rate", style = "quantile") + 
   tm_borders(alpha = 0.3)
+
+##Improved Mapping 
+tmap_mode("plot")
+
+tm_shape(surrey_lsoa) + 
+  tm_polygons("crime_rate", style = "jenks", palette = "Reds", 
+              title = "Crime Rate (per 10,000)") + 
+  tm_borders("black", lwd = 0.5) +
+  tm_layout(main.title = "Crime Rate by LSOA in Surrey")
+
+
 ```
 
 
@@ -210,7 +232,7 @@ head(surrey_lsoa)
 ```
 
 
-So now you've added the work population count, it time to calculate the crime run. Follow the steps below to try and complete the activity. 
+So now you've added the work population count, it time to calculate the crime rate. Follow the steps below to try and complete the activity. 
 
 
 Steps: 
