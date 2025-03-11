@@ -8,6 +8,9 @@ However you can complete the lessons online without the need to install or downl
 
 If you have a Google account then please click the *Open in Colab* link. 
 
+### Pre-joining Instructions 
+
+[![Open In Colab](https://colab.research.google.com/github/UKDataServiceOpen/Mapping_Crime_Data_R_2025/blob/main/Code/Prejoining_Instructions.ipynb)
 
 ### 1 - Exploring the crime data
 
