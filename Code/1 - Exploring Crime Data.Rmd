@@ -1,7 +1,7 @@
 ---
 title: "Mapping Crime Data in R - Exploring Crime Data"
 author: "Nadia Kennar, Research Associate with the UKDS"
-date: "17th of March 2025"
+date: "18th of March 2025"
 output:
   html_notebook: default
 toc: yes
@@ -16,9 +16,9 @@ knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
 
 In this first section I will show you how to read in the data, run some basic exploratory analysis and produce some point maps. 
 
-## Load pacakges
+## Load packages
 
-As always the first step is to load the necessary R packages via the library function. If you do not have these packages installed then please follow the instructions in the *Preliminary Task.Rmd* file. 
+As always the first step is to load the necessary R packages via the library function. If you do not have these packages installed then please follow the instructions in the *Prejoining_Instructions.Rmd* file. 
 
 
 ```{r}
@@ -40,7 +40,7 @@ library(spdep)
 library(leaflet) 
 library(RColorBrewer)
 library(tmap)
-#library(rgdal) 
+#library(rgdal) this package is deprecated
 library(prettymapr)
 ```
 
@@ -50,18 +50,20 @@ library(prettymapr)
 
  We will be using crime data from *https://data.police.uk/*. This is the site for open data about policing and crime in England, Wales and Northern Ireland. You can download street-level crime, outcome, and stop and search data in clear and simple CSV format and explore the API containing detailed crime data and information about individual police forces and neighborhood teams. You can also download data on police activity, and a range of data collected under the police annual data requirement (ADR) including arrests and 101 call handling.
  
- We will be using data from 2021-2022 and in order to save time I have included the data in this R  Project under the Data folder. However, if you were interested in how I collected this then you can view the *downloading the data" doc* word document, In summary this would involve....
+ We will be using data from 2023-2024 and in order to save time I have included the data in this R  Project under the Data folder. However, if you were interested in how I collected this then you can view the *downloading the data" doc* word document, In summary this would involve....
  
-Select Downloads -> Select December 2021 to December 2022 -> select Surrey and click 'Include Crime Data'. Download and unzip the data into your working directory.
+Select Downloads -> Select December 2023 to December 2024 -> select Surrey and click 'Include Crime Data'. Download and unzip the data into your working directory.
 
-Read in just the month of February 2022. 
+Read in just the month of February 2024. 
 
 
 ```{r crime data}
 #unzip(file.choose())
 
 library(readr)
-crime <- read_csv("Data/crime_data/2024-02/2024-02-surrey-street.csv") %>% janitor::clean_names()
+#library(here) you can use 'file.path() or the 'here()' packages for more robust file paths
+getwd()
+crime <- read_csv("/Users/user/Documents/Mapping_Crime_Data_R_2025/Data/crime_data/2024-02/2024-02-surrey-street.csv") %>% janitor::clean_names()
 ```
 
 
@@ -93,7 +95,7 @@ unique(crime$crime_type)
 ```
 
 
-Before moving on to some of the more complicated spatial topics, lets create somne frequency tables for each different crime_type.  
+Before moving on to some of the more complicated spatial topics, lets create some frequency tables for each different crime_type.  
 
 The table() can be used to create a frequency table for each different Primary.Type of crime.
 By default, the table is sorted by the category. order() can be used to order the table by count. In this example, we list the top ten crimes by activity.
@@ -117,10 +119,33 @@ text(1000, y, counts[1:10], pos=4, cex=0.8)
 ```
 
 
+We can also improve these summary tables by using use the 'dplyr' for better readability and functionality. 
+
+```{r}
+#Table 
+
+crime_summary <- crime %>%
+  count(crime_type, sort = TRUE) %>%
+  top_n(10)
+
+print(crime_summary)
+
+#Plot 
+
+ggplot(crime_summary, aes(x = reorder(crime_type, n), y = n, fill = crime_type)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  labs(title = "Top 10 Most Common Crimes in Surrey February 2024",
+       x = "Crime Type", y = "Count") +
+  theme_minimal()
+```
+
+
+
 
 ## Simple Features and Projection methods
 
-Simple Features is a common R language, also known as sf, that allow you to handle and manipulate the UoA (points, lines and polyons). Simple Features allows you store spatial objects
+Simple Features is a common R language, also known as sf, that allow you to handle and manipulate the UoA (points, lines and polyons). Simple Features allows you store spatial objects.
 
 Features refers to the property that linestring and polygons are built from points by straight line segments. 
 
@@ -129,9 +154,9 @@ One of the fastest growing packages in this area is [sf](https://github.com/r-sp
 
 CRS and Projection: 
 
-CRS are  is a coordinate-based local, regional or global system used to locate geographical entities. A spatial reference system defines a specific map projection, as well as transformations between different spatial reference systems. […] spatial reference systems can be referred to using a SRID integer, including EPSG codes
+CRS is a coordinate-based local, regional or global system used to locate geographical entities. A spatial reference system defines a specific map projection, as well as transformations between different spatial reference systems. Spatial reference systems can be referred to using a SRID integer, including EPSG codes.
 
-In short "Projection methods allow us to move move from the 3D to the 2D, CRS allow us to identify specific locations within these 
+In short "Projection methods allow us to move move from the 3D to the 2D, CRS allow us to identify specific locations within these.
 
 There are thousands of CRS, the most common being BNG and the WGS 84 
 
@@ -141,7 +166,7 @@ i.e. the WGS 84 is 4326 (World Geodetic System)
 i.e. the ETRS 1980 = 3035 (European Terrestial Reference System)
 
 
-First step is to transform you ordinary data into an sf object using 'st_as_sf' - which converts our latitude and longitutde to a geometry attribute
+First step is to transform you ordinary data into an sf object using 'st_as_sf' - which converts our latitude and longitude to a geometry attribute
 
 To recap, sf objects are just data-frames that are collections of spatial objects. Each row is a spatial object (e.g. a polgyon), that may have data associated with it (e.g. its area) and a special geo variable that contains the coordinates
 
@@ -191,6 +216,15 @@ ggplot() +
   labs(title = "Crime Count in Surrey", 
        subtitle = "February 2024", 
        caption = "Police Recorded Crime Statistics")
+
+# Go one step further and change theme and transparency
+ggplot() + 
+  geom_sf(data = sf, aes(color = crime_type), alpha = 0.6) +
+  theme_minimal() +
+  labs(title = "Crime Locations in Surrey",
+       subtitle = "February 2024",
+       caption = "Source: Police.uk")
+
 
 ```
 
