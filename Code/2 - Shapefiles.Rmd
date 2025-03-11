@@ -43,7 +43,7 @@ library(tmap)
 
 ## What is a Shapefile? 
 
-They represent a geospatial vector that is used for GIS software. Shapefiles store both geogrpahic location and its associated attribute information 
+They represent a geospatial vector that is used for GIS software. Shapefiles store both geographic location and its associated attribute information 
 
 The Shapefile format stores the data as primitive geometric shapes like points, lines, and polygons. These shapes, together with data attributes that are linked to each shape, create the representation of the geographic data.
 
@@ -78,7 +78,7 @@ head(shp_file)
 
 *Further Information - To clarify, this is an 'empty shapefile', it simply contains the boundary profile of Surrey Heath and does not contain any further attribute information. However, if it did contain further attribute information such as the crime counts, population statistics, IMD counts, then you would not need to join the data as we do in this workshop, but instead you could layer the shapefile over our simple feature object created in Topic 1. More information on this method is available from the workshop that was held in February - all resources are available via the 'Feb_2021' folder from the github link [https://github.com/UKDataServiceOpen/Crime_Data_in_R.git] *
 
-Lets plot the empty shapefile for Surrey Heath to see what we're actually looking at.
+Lets plot the empty shapefile (without attribute data) for Surrey Heath to see what we're actually looking at.
 
 
 ```{r}
@@ -176,6 +176,14 @@ ggplot() +
   geom_sf(data = surrey_lsoa, aes(fill = count), alpha = 0.5) + 
   scale_fill_gradient2(name ="Number of crimes")
 
+## imroved mapping, 
+ggplot(surrey_lsoa) + 
+  geom_sf(aes(fill = count), color = "black", lwd = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Crime Count") + #better colour schemes
+  labs(title = "Crime Counts by LSOA in Surrey",
+       caption = "Source: Police.uk") +
+  theme_minimal()
+
 ```
 
 
@@ -193,23 +201,40 @@ tm_shape(surrey_lsoa) +
   tm_borders("green", lwd = 0.7, alpha = 0.5)
   #tm_text("name", size = "AREA", col = "black")
   #tmap_style("col_blind")
+
+## another example
+tm_shape(surrey_lsoa) + 
+  tm_polygons("count", palette = "Reds", title = "Crime Count") + 
+  tm_borders("black", lwd = 0.5) +
+  tm_layout(main.title = "Crime Counts by LSOA in Surrey")
+
 ```
 
 
 
 ### Classification methods
 
-How can we better visualise counts? Count data does not equally represent the population distribution at hand, tmaps allows you to alter the characteristics of theamatic maps via the 'styles' function. The different styles result in different binning techniques.  Now, when mapping quantitiatve data such as crime counts, typicaly the variables needed to be put into to 'bins'. As seen in the previous example, the default binning applied to highlight the LSOAs grouped started from 1-10, 11-20, 21-20, 31-40, 41-50 and 51-60 crimes.
+How can we better visualise counts? Count data does not equally represent the population distribution at hand, tmaps allows you to alter the characteristics of thematic maps via the 'styles' function. The different styles result in different binning techniques.  Now, when mapping quantitative data such as crime counts, typically the variables needed to be put into to 'bins'. As seen in the previous example, the default binning applied to highlight the LSOAs grouped started from 1-10, 11-20, 21-20, 31-40, 41-50 and 51-60 crimes.
 
-These bins were decided on automatically, however we can define more accurate classes that best refelct the distributional character of the data set.
+These bins were decided on automatically, however we can define more accurate classes that best reflect the distributional character of the data set.
 
 
 In this example I've used the "kmeans", "jenks" and "sd".
 
 - k-means is a method of vector quantisation, originally from signal processing, that aims to partition n observations into k clusters in which each observation belongs to the cluster with the nearest mean, serving as a prototype of the cluster.
-- Jenks (also known as natural breaks, or goodness of fit variance) classifcaiton aims to arrange a set of values into natural classes, that is the most optimal class range found naturally. This method minimizes the variation within each range, so the areas within each range are as close as possible in value to each other. 
+- Jenks (also known as natural breaks, or goodness of fit variance) classification aims to arrange a set of values into natural classes, that is the most optimal class range found naturally. This method minimizes the variation within each range, so the areas within each range are as close as possible in value to each other. 
 - sd classification is a standarised measure of observations deviated from the mean. By showing which values are above or below the mean, this method helps to show which locations are above or below an average mean.
 
+
+Here's a quick example to show why different classification methods matter
+
+```{r}
+hist(surrey_lsoa$count, breaks = 30, main = "Crime Count Distribution", col = "lightblue")
+
+```
+
+
+Lets look at some more detailed examples; 
 
 
 ```{r}
