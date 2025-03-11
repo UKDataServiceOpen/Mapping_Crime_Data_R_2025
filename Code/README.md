@@ -26,3 +26,4 @@ If you have a Google account then please click the *Open in Colab* link.
 
 ### 4 - Spatial Analysis
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/UKDataServiceOpen/Mapping_Crime_Data_R_2025/blob/main/Code/4%20-%20Spatial%20Analysis.ipynb)
