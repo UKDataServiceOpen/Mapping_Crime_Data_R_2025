@@ -1,4 +1,4 @@
-![UKDS Logo](./assets/UKDS_Logos_Col_Grey_300dpi.png)<br> <br>
+![UKDS Logo](./assests/UKDS_Logos_Col_Grey_300dpi.png)<br> <br>
 
 # Crime_Data_in_R
 
