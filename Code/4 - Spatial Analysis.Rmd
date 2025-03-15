@@ -57,9 +57,12 @@ Spatial interpolation is a statistical technique used to predict or estimate val
 Lets explore our data. 
 
 ```{r}
-crime <- read_csv("/Users/user/Documents/Mapping_Crime_Data_R_2025/Data/crime_data/2024-02/2024-02-surrey-street.csv") %>% janitor::clean_names()
+# crime <- read_csv("/Users/user/Documents/Mapping_Crime_Data_R_2025/Data/crime_data/2024-02/2024-02-surrey-street.csv") %>% janitor::clean_names()
+# 
+# summary(crime)
 
-summary(crime)
+url <- "https://raw.githubusercontent.com/UKDataServiceOpen/Mapping_Crime_Data_R_2025/main/Data/crime_data/2024-02/2024-02-surrey-street.csv"
+crime <- read_csv(url) %>% janitor::clean_names()
 
 ```
 
@@ -372,21 +375,56 @@ We dynamically load **12 months of crime data** from the `Data/crime_data` direc
 ```{r load-data}
 # Define path to the crime data folder
 #crime_data_path <- "Data/crime_data"
-crime_data_path <- "/Users/user/Documents/Mapping_Crime_Data_R_2025/Data/crime_data"
+# crime_data_path <- "/Users/user/Documents/Mapping_Crime_Data_R_2025/Data/crime_data"
+# 
+# # List all monthly folders dynamically (last 12 months)
+# monthly_folders <- dir_ls(crime_data_path, type = "directory") %>% tail(12)
+# 
+# # Function to read each month's crime data
+# read_crime_data <- function(folder) {
+#   file_path <- dir_ls(folder, regexp = "surrey-street.csv$")
+#   read_csv(file_path) %>%
+#     clean_names() %>%
+#     mutate(month = basename(folder)) # Extract folder name as new column
+# }
+# 
+# # Read all crime data from the last 12 months
+# all_crime_data <- map_dfr(monthly_folders, read_crime_data)
 
-# List all monthly folders dynamically (last 12 months)
-monthly_folders <- dir_ls(crime_data_path, type = "directory") %>% tail(12)
+##
+library(tidyverse)
+library(fs)
+library(janitor)
 
-# Function to read each month's crime data
-read_crime_data <- function(folder) {
-  file_path <- dir_ls(folder, regexp = "surrey-street.csv$")
-  read_csv(file_path) %>%
+# Define base GitHub URL
+github_base <- "https://raw.githubusercontent.com/UKDataServiceOpen/Mapping_Crime_Data_R_2025/main/Data/crime_data"
+
+# List last 12 months (update as needed)
+months <- format(seq(Sys.Date(), by = "-1 month", length.out = 12), "%Y-%m")
+
+# Function to download and read each month's crime data
+read_crime_data <- function(month) {
+  file_url <- paste0(github_base, "/", month, "/", month, "-surrey-street.csv")
+  
+  # Temporary file to store downloaded data
+  temp_file <- tempfile(fileext = ".csv")
+  
+  # Download the file
+  download.file(file_url, temp_file, mode = "wb")
+  
+  # Read the CSV file
+  read_csv(temp_file) %>%
     clean_names() %>%
-    mutate(month = basename(folder)) # Extract folder name as new column
+    mutate(month = month) # Add month as a column
 }
 
-# Read all crime data from the last 12 months
-all_crime_data <- map_dfr(monthly_folders, read_crime_data)
+# Read and merge all crime data from the last 12 months
+all_crime_data <- map_dfr(months, possibly(read_crime_data, NULL))
+
+# View dataset
+head(all_crime_data)
+
+
 ```
 
 ---
