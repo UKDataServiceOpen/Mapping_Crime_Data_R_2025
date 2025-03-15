@@ -23,9 +23,9 @@ As always the first step is to load the necessary R packages via the library fun
 
 ```{r install packages}
 #install.packages(")
-install.packages(c("dplyr", "tidyr", "readr", "tibble", "janitor", "sf", 
-                   "ggmap", "ggplot2", "ggspatial", "spdep", "leaflet", 
-                   "RColorBrewer", "tmap", "cartogram", "prettymapr"))
+#install.packages(c("dplyr", "tidyr", "readr", "tibble", "janitor", "sf", 
+                  # "ggmap", "ggplot2", "ggspatial", "spdep", "leaflet", 
+                  # "RColorBrewer", "tmap", "cartogram", "prettymapr"))
 ```
 
 
@@ -67,9 +67,9 @@ Read in just the month of February 2024.
 #unzip(file.choose())
 
 library(readr)
-#library(here) you can use 'file.path() or the 'here()' packages for more robust file paths
-getwd()
-crime <- read_csv("/Users/user/Documents/Mapping_Crime_Data_R_2025/Data/crime_data/2024-02/2024-02-surrey-street.csv") %>% janitor::clean_names()
+url <- "https://raw.githubusercontent.com/UKDataServiceOpen/Mapping_Crime_Data_R_2025/main/Data/crime_data/2024-02/2024-02-surrey-street.csv"
+crime_data <- read_csv(url) %>% janitor::clean_names()
+
 ```
 
 
