@@ -16,14 +16,20 @@ knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
 
 In this first section I will show you how to read in the data, run some basic exploratory analysis and produce some point maps. 
 
-## Load packages
+## Install and Load packages
 
 As always the first step is to load the necessary R packages via the library function. If you do not have these packages installed then please follow the instructions in the *Prejoining_Instructions.Rmd* file. 
 
 
-```{r}
+```{r install packages}
 #install.packages(")
+install.packages(c("dplyr", "tidyr", "readr", "tibble", "janitor", "sf", 
+                   "ggmap", "ggplot2", "ggspatial", "spdep", "leaflet", 
+                   "RColorBrewer", "tmap", "cartogram", "prettymapr"))
+```
 
+
+```{r load packages}
 # for data reading/manipulation 
 library(dplyr)
 library(tidyr)
