@@ -70,7 +70,13 @@ We are going to start with just the resident population which is the data set na
 
 ```{r}
 
-residential_count <- read_excel("~/Documents/Mapping_Crime_Data_R_2025/Data/census_data /resident_population .xlsx") %>% clean_names() %>%
+url <- "https://raw.githubusercontent.com/UKDataServiceOpen/Mapping_Crime_Data_R_2025/main/Data/census_data/resident_population.xlsx"
+
+# Download the Excel file to a temporary location before reading
+temp_file <- tempfile(fileext = ".xlsx")
+download.file(url, temp_file, mode = "wb")
+
+residential_count <- read_excel(temp_file) %>% janitor::clean_names() %>%
   slice(-c(1:7)) %>%
   slice(-c(56, 57)) %>% 
   rename(lsoa = x2, #rename the variables 
