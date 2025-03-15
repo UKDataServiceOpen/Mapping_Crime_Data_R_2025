@@ -68,7 +68,7 @@ Read in just the month of February 2024.
 
 library(readr)
 url <- "https://raw.githubusercontent.com/UKDataServiceOpen/Mapping_Crime_Data_R_2025/main/Data/crime_data/2024-02/2024-02-surrey-street.csv"
-crime_data <- read_csv(url) %>% janitor::clean_names()
+crime <- read_csv(url) %>% janitor::clean_names()
 
 ```
 
