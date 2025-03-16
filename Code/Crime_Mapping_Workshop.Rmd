@@ -64,10 +64,11 @@ knitr::opts_chunk$set(echo = TRUE)
 # install.packages("tmap")
 # install.packages("cartogram")
 # install.packages("prettymapr")
+# install.packages("geojsonio") needed to convert spatial objects in colab for accurate visualisation
 
 install.packages(c("dplyr", "tidyr", "readr", "tibble", "janitor", "sf",
                    "ggmap", "ggplot2", "ggspatial", "spdep", "leaflet",
-                   "RColorBrewer", "tmap", "cartogram", "prettymapr"))
+                   "RColorBrewer", "tmap", "cartogram", "prettymapr", "geojsonio"))
 ```
 
 
@@ -92,7 +93,7 @@ library(RColorBrewer)
 library(tmap)
 library(cartogram)
 library(prettymapr)
-
+library(geojsonio)
 ```
 
 
@@ -152,6 +153,7 @@ library(RColorBrewer)
 library(tmap)
 #library(rgdal) this package is deprecated
 library(prettymapr)
+library(geojsonio)
 ```
 
 
@@ -418,6 +420,7 @@ library(spdep)
 library(leaflet) 
 library(RColorBrewer)
 library(tmap)
+library(geojsonio)
 
 ```
 
@@ -817,7 +820,7 @@ library(spdep)
 library(leaflet) 
 library(RColorBrewer)
 library(tmap)
-
+library(geojsonio)
 ```
 
 
@@ -983,18 +986,22 @@ We have successfully mapped the residential population, now lets do the same wit
 
 ```{r}
 
-workday_count <- read_excel("~/Documents/Mapping_Crime_Data_R_2025/Data/census_data /workday_population.xlsx") %>% clean_names() %>%
+url <- "https://raw.githubusercontent.com/UKDataServiceOpen/Mapping_Crime_Data_R_2025/main/Data/census_data/workday_population.xlsx"
+
+# Download the Excel file to a temporary location before reading
+temp_file <- tempfile(fileext = ".xlsx")
+download.file(url, temp_file, mode = "wb")
+
+workday_count <- read_excel(temp_file) %>% janitor::clean_names() %>%
   slice(-c(1:7)) %>%
-  slice(-c(56, 57)) %>%
-  rename(lsoa = x2, #rename the variables 
+  slice(-c(56, 57)) %>% 
+ rename(lsoa = x2, #rename the variables 
          name = wd102ew_population_density, 
          work_count = x3) 
 
-head(workday_count)  
+head(workday_count)
+# head(residential_count) the previous code
 ```
-
-
-And then remember you need to join this to our shapefile by using the left_join function.
 
 ```{r}
 surrey_lsoa <- left_join(surrey_lsoa, workday_count, by = c("lsoa21cd"="lsoa"))
@@ -1104,6 +1111,10 @@ library(spdep)
 library(leaflet) 
 library(RColorBrewer)
 library(tmap)
+library(geojsonio)
+
+install.packages("zoo")
+library(zoo) #for rolling averages
 
 ```
 
@@ -1668,7 +1679,7 @@ library(spdep)
 library(leaflet) 
 library(RColorBrewer)
 library(tmap)
-
+library(geojsonio)
 ```
 
 
